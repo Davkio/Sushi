@@ -1,0 +1,16 @@
+{
+  "name": "sushi",
+  "version": "1.0.0",
+  "description": "Discord library written in Node.js",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://lukehaeffner@bitbucket.org/lukehaeffner/sushi.git"
+  },
+  "author": "Food Library",
+  "license": "ISC",
+  "homepage": "https://bitbucket.org/lukehaeffner/sushi#readme"
+}

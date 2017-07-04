@@ -19,7 +19,7 @@ Sushi library can also be called simply like this
 var Sushi = require("sushi");
 
 var bot = new Sushi();
-bot.connect("YOUR_TOKEN_HERE);
+bot.connect("YOUR_TOKEN_HERE");
 ```
 
 ## **TODO**

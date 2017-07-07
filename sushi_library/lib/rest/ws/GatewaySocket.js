@@ -14,26 +14,26 @@ class GatewaySocket {
         this.socket = null;
 
         this.logger = this.sushi.logger;
-        this.SushiEvent = sushi.SushiEvent; 
         
         this.token = this.sushi.token;
         
-
         this.seq = 0;        
         this.heartbeatAck = false;
         this.lastHeartbeatAckTime = null;
         this.heartbeatInterval = 0;
+
+        this.packetManager = null; 
     }
 
     /**
      * Attempt to connect to Discords server
      * @param {String} url Gateway connection url.
      */    
+
     connect(url) {
 
         this.gatewayURL = url || this.gatewayURL;
 
-        // BaseSocket class which extends WebSocket         
         let ws = this.socket = new BaseSocket(this.gatewayURL + Constants.Sushi.ENCODING, this.logger);
         
         ws.on("open", e => {
@@ -42,45 +42,49 @@ class GatewaySocket {
         });
 
         ws.on("message", e => {
-            if (this.socket != ws) return;
 
             const msg = JSON.parse(e);
             const op = msg.op;      // op code
             const d = msg.d;        // event data 
             const s = msg.s;        // sequence number || only for OP 0
             const t = msg.t;        // event name for payload || only for OP 0
-
-            //this.logger.log(`[GATEWAY/Received] OP: ${op} | T: ${t} | D: ${d}`);
-
-            this.logger.log(`[GW/Received] op:${op} ${t}`);
-
-            if (op === Constants.GatewayOPCodes.HELLO) {
-                this.heartbeatInterval = d.heartbeat_interval;
-                this.logger.log(`[GW/Hello] HB Timer: ${this.heartbeatInterval}ms`);
-
-                const sendHeartbeat = () => {
-                    this.heartbeat();
-                }
-                ws.setHeartbeat(sendHeartbeat, this.heartbeatInterval);
-            }
-
-            if (op === Constants.GatewayOPCodes.HEARTBEAT_ACK) {
-                this.logger.log(`[GW/HB_Ack]`);
-                this.heartbeatAck = true;
-            }
             
-            if (t === "READY") {
-                this.logger.log("[GW/Ready]");
-                this.SushiEvent.emit("GATEWAY_READY", { socket: this });
-            }
-
+            this.handlePacket(msg);
+            
         });
 
         ws.on("close", (e) => {
-            this.logger.info('[WS/Close]', e);
+            this.logger.warn('[WS/Close]', e);
         });
     }
 
+    /**
+     * Process packet passed from ws.on("message") event
+     * @param {Object} packet 
+     */
+    handlePacket(packet) {
+        if (packet.op === Constants.GatewayOPCodes.HELLO) {
+            this.heartbeatInterval = packet.d.heartbeat_interval;
+            this.logger.log(`[GW/Hello] HB Timer: ${this.heartbeatInterval}ms`);
+
+            const sendHeartbeat = () => {
+                this.heartbeat();
+            }
+            return this.socket.setHeartbeat(sendHeartbeat, this.heartbeatInterval);
+        }
+
+        if (packet.op === Constants.GatewayOPCodes.HEARTBEAT_ACK) {
+            this.logger.log(`[GW/HB_Ack]`);
+            this.heartbeatAck = true;
+            return;
+        }
+
+        else {
+            this.logger.log(`[GW/Event] ${packet.t}`);
+            this.sushi.SushiEvent.emit(packet.t, packet.d);
+        }
+    }
+    
     /**
      * Identify the client to discord server
      */    

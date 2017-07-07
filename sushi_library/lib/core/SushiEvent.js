@@ -29,8 +29,6 @@ class SushiEvents extends events.EventEmitter {
     }
 
     emit(eventType, data) {
-        console.log(eventType);
-        //validateEvent(eventType);
         super.emit(eventType, data);
     }
 }

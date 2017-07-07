@@ -19,6 +19,7 @@ class SushiError extends Error {
     toJSON() {
         return this.message;
     }
+
 }
 
 module.exports = SushiError;

@@ -24,6 +24,8 @@ class Sushi {
 
         this.gatewayURL = null;        
         this.gatewaySocket = null;
+
+        const gw = () => this.gatewaySocket
         
         this.requestHandler = new Request(this);
         this.logger = new SushiLogger(this);
@@ -43,6 +45,15 @@ class Sushi {
         });
     }
 
+    /**
+     * Disconnects from the gateway socket
+     */    
+    disconnect() {
+        if (this.gatewaySocket) {
+            this.gatewaySocket.disconnect();
+            this.gatewaySocket = null;
+        }
+    }    
     /**
      * Contact the gateway 
      * @returns {Promise<String>} Resolves with the Gateway URL

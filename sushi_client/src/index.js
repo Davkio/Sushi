@@ -11,9 +11,18 @@ class SushiBot extends Sushi {
         
         this.connect(this.options.token);
     
-        this.SushiEvent.on("GATEWAY_READY", (e) => {
-            //console.log("Client -- GW ready", e);
-        }) 
+        this.SushiEvent.on("READY", (e) => {
+            console.log("CLIENT -- READY");
+        });
+
+        this.SushiEvent.on("MESSAGE_CREATE", (e) => {
+            if (e.content == 'sushi --debug --message') {
+                return console.log(e)
+            }
+            if (e.content == 'sushi --debug --channel') {
+                return console.log(e.channel_id);
+            }
+        })
     }
 
 }

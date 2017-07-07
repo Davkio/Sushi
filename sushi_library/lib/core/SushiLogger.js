@@ -18,7 +18,7 @@ class SushiLogging {
 
     error(info, message) {
         message = message || " ";
-        console.log(this.getTime() + ' [LOG/ERR] ' + info + ' ' + message);
+        console.log(this.getTime() + ' [LOG/ERR]  ' + info + ' ' + message);
     }
 
     getTime() {

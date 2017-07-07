@@ -5,7 +5,7 @@ const Constants = require('../../Constants');
 
 class GatewaySocket {
     /**
-     * 
+     * Create websocket and gateway connection
      * @param {Object} sushi The sushi client
      * @param {Object} options Options for connecting to the Gateway -- TODO: set this up
      */
@@ -18,12 +18,13 @@ class GatewaySocket {
         
         this.seq = 0;        
         this.heartbeatAck = false;
+        this.lastHeartbeatAckTime = null;
         this.heartbeatInterval = 0;
     }
 
     /**
      * Attempt to connect to Discords server
-     * @param {*} url Gateway connection url.
+     * @param {String} url Gateway connection url.
      */    
     connect(url) {
 
@@ -38,6 +39,7 @@ class GatewaySocket {
         });
 
         ws.on("message", e => {
+            if (this.socket != ws) return;
 
             const msg = JSON.parse(e);
             const op = msg.op;      // op code
@@ -47,11 +49,16 @@ class GatewaySocket {
 
             //this.logger.log(`[GATEWAY/Received] OP: ${op} | T: ${t} | D: ${d}`);
 
-            this.logger.log(`[GW/Received] op: ${op} t: ${t}`);
+            this.logger.log(`[GW/Received] op:${op} ${t}`);
 
             if (op === Constants.GatewayOPCodes.HELLO) {
                 this.heartbeatInterval = d.heartbeat_interval;
-                this.heartbeat();
+                this.logger.log(`[GW/Hello] HB Time: ${this.heartbeatInterval}ms`);
+
+                const sendHeartbeat = () => {
+                    this.heartbeat();
+                }
+                ws.setHeartbeat(sendHeartbeat, this.heartbeatInterval);
             }
 
             if (op === Constants.GatewayOPCodes.HEARTBEAT_ACK) {
@@ -63,11 +70,11 @@ class GatewaySocket {
                 this.logger.log("[GW/Ready]");
             }
 
-            ws.on("close", (e) => {
-                this.logger.error('[WS/Close]', e);
-            })
         });
 
+        ws.on("close", (e) => {
+            this.logger.info('[WS/Close]', e);
+        });
     }
 
     /**

@@ -2,6 +2,8 @@
 
 const WebSocket = require("ws");
 
+const heartbeat = new WeakMap();
+
 class BaseSocket extends WebSocket {
     /**
      * Base level socket connection event handling
@@ -22,7 +24,31 @@ class BaseSocket extends WebSocket {
         let m = { op: op, d: data };
         this.logger.log(`[GW/Sent] op: ${op}`);
 
-        super.send(JSON.stringify(m));
+        try {
+            super.send(JSON.stringify(m));
+        } catch (e) {
+            this.logger.error(`[GW/Fail] ${e.stack}`);
+        }
+    }
+
+    unsetHeartbeat() {
+        var handle = heartbeat.get(this);
+        if (handle !== undefined) clearInterval(handle);
+        heartbeat.delete(this);
+    }   
+    
+    setHeartbeat(callback, msec) {
+
+        this.unsetHeartbeat();
+        
+        heartbeat.set(this, setInterval(() => {
+            callback();
+        }, msec));
+    }
+
+    close() {
+        super.close()
+        clearTimeout(5);
     }
 }
 

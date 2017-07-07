@@ -8,8 +8,8 @@ const GatewaySocket = require('./rest/ws/GatewaySocket');
 
 const SushiError = require('./core/SushiError');
 const SushiLogger = require('./core/SushiLogger');
+const SushiEvents = require('./core/SushiEvent');
 
-const events = require("events");
 
 class Sushi {
     /**
@@ -27,6 +27,7 @@ class Sushi {
         
         this.requestHandler = new Request(this);
         this.logger = new SushiLogger(this);
+        this.SushiEvent = new SushiEvents();
     }
 
     /**

@@ -14,8 +14,11 @@ class GatewaySocket {
         this.socket = null;
 
         this.logger = this.sushi.logger;
+        this.SushiEvent = sushi.SushiEvent; 
+        
         this.token = this.sushi.token;
         
+
         this.seq = 0;        
         this.heartbeatAck = false;
         this.lastHeartbeatAckTime = null;
@@ -53,7 +56,7 @@ class GatewaySocket {
 
             if (op === Constants.GatewayOPCodes.HELLO) {
                 this.heartbeatInterval = d.heartbeat_interval;
-                this.logger.log(`[GW/Hello] HB Time: ${this.heartbeatInterval}ms`);
+                this.logger.log(`[GW/Hello] HB Timer: ${this.heartbeatInterval}ms`);
 
                 const sendHeartbeat = () => {
                     this.heartbeat();
@@ -68,6 +71,7 @@ class GatewaySocket {
             
             if (t === "READY") {
                 this.logger.log("[GW/Ready]");
+                this.SushiEvent.emit("GATEWAY_READY", { socket: this });
             }
 
         });

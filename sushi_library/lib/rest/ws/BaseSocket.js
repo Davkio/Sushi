@@ -13,6 +13,7 @@ class BaseSocket extends WebSocket {
     constructor(url, logger) {
         super(url);
         this.logger = logger;
+        this.setMaxListeners(14);
     }
 
     /**
@@ -31,12 +32,21 @@ class BaseSocket extends WebSocket {
         }
     }
 
+
+    /**
+     * Unset WebSocket Heartbeat
+     */    
     unsetHeartbeat() {
         var handle = heartbeat.get(this);
         if (handle !== undefined) clearInterval(handle);
         heartbeat.delete(this);
     }   
     
+    /**
+     * 
+     * @param {Function} callback heartbeat() function
+     * @param {Integer} msec heartbeat time in  milliseconds
+     */
     setHeartbeat(callback, msec) {
 
         this.unsetHeartbeat();
@@ -46,6 +56,9 @@ class BaseSocket extends WebSocket {
         }, msec));
     }
 
+    /**
+     * Close the websocket
+     */    
     close() {
         super.close()
         clearTimeout(5);

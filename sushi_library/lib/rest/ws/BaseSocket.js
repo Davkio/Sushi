@@ -20,7 +20,7 @@ class BaseSocket extends WebSocket {
      */
     send(op, data) {
         let m = { op: op, d: data };
-        this.logger.log(`[GATEWAY/Sent] OP: ${op}`);
+        this.logger.log(`[GW/Sent] op: ${op}`);
 
         super.send(JSON.stringify(m));
     }

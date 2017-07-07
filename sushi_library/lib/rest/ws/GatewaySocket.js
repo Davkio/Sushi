@@ -33,7 +33,7 @@ class GatewaySocket {
         let ws = this.socket = new BaseSocket(this.gatewayURL + Constants.Sushi.ENCODING, this.logger);
         
         ws.on("open", e => {
-            this.logger.log("[GATEWAY/Open]", e);
+            this.logger.log("[GW/Open]");
             this.identify();
         });
 
@@ -45,7 +45,9 @@ class GatewaySocket {
             const s = msg.s;        // sequence number || only for OP 0
             const t = msg.t;        // event name for payload || only for OP 0
 
-            this.logger.log(`[GATEWAY/Received] OP: ${op} | T: ${t} | D: ${d}`);
+            //this.logger.log(`[GATEWAY/Received] OP: ${op} | T: ${t} | D: ${d}`);
+
+            this.logger.log(`[GW/Received] op: ${op} t: ${t}`);
 
             if (op === Constants.GatewayOPCodes.HELLO) {
                 this.heartbeatInterval = d.heartbeat_interval;
@@ -53,16 +55,16 @@ class GatewaySocket {
             }
 
             if (op === Constants.GatewayOPCodes.HEARTBEAT_ACK) {
-                this.logger.log('[GATEWAY/Heartbeat_Ack]');
+                this.logger.log(`[GW/HB_Ack]`);
                 this.heartbeatAck = true;
             }
             
             if (t === "READY") {
-                this.logger.log("[GATEWAY/Ready]");
+                this.logger.log("[GW/Ready]");
             }
 
             ws.on("close", (e) => {
-                this.logger.error('[WEBSOCKET/Close]', e);
+                this.logger.error('[WS/Close]', e);
             })
         });
 

@@ -13,12 +13,12 @@ class SushiLogging {
 
     warn(info, message) {
         message = message || " ";
-        console.log(this.getTime() + '[LOG/Warn] ' + info + ' ' + message);
+        console.log(this.getTime() + ' [LOG/Warn] ' + info + ' ' + message);
     }
 
     error(info, message) {
         message = message || " ";
-        console.log(this.getTime() + '[LOG/ERROR] ' + info + ' ' + message);
+        console.log(this.getTime() + ' [LOG/ERR] ' + info + ' ' + message);
     }
 
     getTime() {

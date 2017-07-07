@@ -13,6 +13,7 @@ class GatewaySocket {
         this.sushi = sushi;
         this.socket = null;
 
+        this.logger = this.sushi.logger;
         this.token = this.sushi.token;
         
         this.seq = 0;        
@@ -25,13 +26,14 @@ class GatewaySocket {
      * @param {*} url Gateway connection url.
      */    
     connect(url) {
+
         this.gatewayURL = url || this.gatewayURL;
 
         // BaseSocket class which extends WebSocket         
-        let ws = this.socket = new BaseSocket(this.gatewayURL + Constants.Sushi.ENCODING);
+        let ws = this.socket = new BaseSocket(this.gatewayURL + Constants.Sushi.ENCODING, this.logger);
         
         ws.on("open", e => {
-            console.log("[GATEWAY/Open]");
+            this.logger.log("[GATEWAY/Open]", e);
             this.identify();
         });
 
@@ -43,7 +45,7 @@ class GatewaySocket {
             const s = msg.s;        // sequence number || only for OP 0
             const t = msg.t;        // event name for payload || only for OP 0
 
-            console.log(`[GATEWAY/Received] OP: ${op} | T: ${t} | D: ${d}`);
+            this.logger.log(`[GATEWAY/Received] OP: ${op} | T: ${t} | D: ${d}`);
 
             if (op === Constants.GatewayOPCodes.HELLO) {
                 this.heartbeatInterval = d.heartbeat_interval;
@@ -51,17 +53,16 @@ class GatewaySocket {
             }
 
             if (op === Constants.GatewayOPCodes.HEARTBEAT_ACK) {
-                console.log('[GATEWAY/Heartbeat_Ack]');
+                this.logger.log('[GATEWAY/Heartbeat_Ack]');
                 this.heartbeatAck = true;
             }
             
             if (t === "READY") {
-                console.log("[GATEWAY/Ready]");
+                this.logger.log("[GATEWAY/Ready]");
             }
 
             ws.on("close", (e) => {
-                console.log('[WEBSOCKET/Close]');
-                console.log(e);
+                this.logger.error('[WEBSOCKET/Close]', e);
             })
         });
 

@@ -8,8 +8,9 @@ class BaseSocket extends WebSocket {
      * @extends Websocket
      * @param {String} url Url used to connect to Discord's websocket 
      */
-    constructor(url) {
+    constructor(url, logger) {
         super(url);
+        this.logger = logger;
     }
 
     /**
@@ -19,7 +20,7 @@ class BaseSocket extends WebSocket {
      */
     send(op, data) {
         let m = { op: op, d: data };
-        console.log(`[GATEWAY/Sent] OP: ${op}`);
+        this.logger.log(`[GATEWAY/Sent] OP: ${op}`);
 
         super.send(JSON.stringify(m));
     }

@@ -16,11 +16,24 @@ class SushiBot extends Sushi {
         });
 
         this.SushiEvent.on("MESSAGE_CREATE", (e) => {
-            if (e.content == 'sushi --debug --message') {
-                return console.log(e)
-            }
-            if (e.content == 'sushi --debug --channel') {
-                return console.log(e.channel_id);
+            if (e.content.startsWith('sushi --debug ')) {
+
+                if (e.content.endsWith('message')) {
+                    return console.log(e)
+                }
+                if (e.content.endsWith('channel')) {
+                    let channel = e.channel_id;
+                    return this.requestHandler.request("GET", `/channels/${channel}`).then((data) => {
+                        console.log(data);
+                    })
+                }
+                if (e.content.endsWith('--send')) {
+                    let channel = e.channel_id;
+                    return this.requestHandler.request("POST", `/channels/${channel}/messages`, { content: JSON.stringify(e) });
+                }
+                if (e.content.endsWith("--status")) {
+                    return this.Bot.setStatus("dnd", "In development!");
+                }
             }
         })
     }

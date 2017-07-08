@@ -55,6 +55,7 @@ class GatewaySocket {
 
         ws.on("close", (e) => {
             this.logger.warn('[WS/Close]', e);
+            this.logger.error(Constants.OPErrors[e]);
         });
     }
 
@@ -100,6 +101,25 @@ class GatewaySocket {
             compress: false
         };
         this.send(Constants.GatewayOPCodes.IDENTIFY, data);
+    }
+
+   /**
+    * Set the status info for Sushi client
+    * @param {*} status 
+    * @param {*} game 
+    */ 
+    statusUpdate(status, game) {
+
+        // {"op": 3, "d": {"status": "dnd", "since": 0, "game": null, "afk", false}}
+
+        if (typeof game === "string") game = { name: game };
+
+        this.send(Constants.GatewayOPCodes.STATUS_UPDATE, {
+            status: String(status),
+            since: 0,
+            game: game || null,
+            afk: false
+        })
     }
 
     /**

@@ -1,6 +1,8 @@
 "use strict";
 
 module.exports.Sushi = {
+    SHARD_ID: 0,
+    SHARD_COUNT: 0,
     ENCODING: "?v=5&encoding=JSON",
     BROWSER: "sushi",
     VERSION: 1
@@ -67,6 +69,14 @@ module.exports.VoiceOPCodes = {
     SPEAKING: 5
 };
 
+module.exports.StatusTypes = {
+    ONLINE: "online",
+    OFFLINE: "offline",
+    IDLE: "idle",
+    DND: "dnd",
+    INVISIBLE: "invisble"
+}
+
 module.exports.Permissions = {
     createInstantInvite: 1,
     kickMembers: 1 << 1,
@@ -102,7 +112,7 @@ module.exports.Permissions = {
     allVoice: 0b0110011111100000000000000010001
 };
 
-module.exports.Errors = {
+module.exports.OPErrors = {
     4000: "Unkown Error",
     4001: "Unkown OPCODE",
     4002: "Decode Error",

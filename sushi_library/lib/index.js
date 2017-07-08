@@ -10,6 +10,7 @@ const SushiError = require('./core/SushiError');
 const SushiLogger = require('./core/SushiLogger');
 const SushiEvents = require('./core/SushiEvent');
 
+const IUser = require('./interfaces/IUser');
 
 class Sushi {
     /**
@@ -25,11 +26,13 @@ class Sushi {
         this.gatewayURL = null;        
         this.gatewaySocket = null;
 
-        const gw = () => this.gatewaySocket
+        const gw = () => this.gatewaySocket;
         
         this.requestHandler = new Request(this);
         this.logger = new SushiLogger(this);
         this.SushiEvent = new SushiEvents();
+
+        this.Bot = new IUser(this);
     }
 
     /**
@@ -59,7 +62,7 @@ class Sushi {
      * @returns {Promise<String>} Resolves with the Gateway URL
      */    
     getGateway() {
-        return this.requestHandler.request("GET", Endpoints.GATEWAY_BOT, this.token);
+        return this.requestHandler.request("GET", Endpoints.GATEWAY_BOT);
     }
 
     /**

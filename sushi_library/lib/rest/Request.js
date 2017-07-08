@@ -27,14 +27,16 @@ class RequestHandler {
             var response;
             var headers = {
                 "User-Agent": this.userAgent,
-                "Authorization": 'Bot ' + body
+                "Authorization": 'Bot ' + this._sushi.token,
+                "Content-Type": "application/json"
             };
 
             var options = {
                 headers: headers,
                 method: method,
                 hostname: "discordapp.com",
-                path: this.baseURL + url
+                path: this.baseURL + url,
+                data:body
             }
 
             var req = HTTPS.request(options, (res) => {
@@ -63,6 +65,10 @@ class RequestHandler {
             req.on('error', function (err) {
                 reject(err);
             });
+            
+            if (body) {
+                req.write(JSON.stringify(body));
+            }
             req.end();
         });
     }

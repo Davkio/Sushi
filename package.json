@@ -8,9 +8,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://lukehaeffner@bitbucket.org/lukehaeffner/sushi.git"
+    "url": "git+https://lhae0002@student.monash.edu/Davkio/sushi.git"
   },
   "author": "Food Library",
   "license": "ISC",
-  "homepage": "https://bitbucket.org/lukehaeffner/sushi#readme"
+  "homepage": "https://github.com/Davkio/sushi#readme",
+  "dependencies": {
+    "ws": "^6.1.0"
+  }
 }

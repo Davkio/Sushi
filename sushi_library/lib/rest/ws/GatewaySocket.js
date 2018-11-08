@@ -14,43 +14,42 @@ class GatewaySocket {
         this.socket = null;
 
         this.logger = this.sushi.logger;
-        
+
         this.token = this.sushi.token;
-        
-        this.seq = 0;        
+
+        this.seq = 0;
         this.heartbeatAck = false;
         this.lastHeartbeatAckTime = null;
         this.heartbeatInterval = 0;
 
-        this.packetManager = null; 
+        this.packetManager = null;
     }
 
     /**
      * Attempt to connect to Discords server
      * @param {String} url Gateway connection url.
-     */    
+     */
 
     connect(url) {
 
         this.gatewayURL = url || this.gatewayURL;
 
         let ws = this.socket = new BaseSocket(this.gatewayURL + Constants.Sushi.ENCODING, this.logger);
-        
+
         ws.on("open", e => {
             this.logger.log("[GW/Open]");
             this.identify();
         });
 
         ws.on("message", e => {
-
             const msg = JSON.parse(e);
             const op = msg.op;      // op code
             const d = msg.d;        // event data 
             const s = msg.s;        // sequence number || only for OP 0
             const t = msg.t;        // event name for payload || only for OP 0
-            
+
             this.handlePacket(msg);
-            
+
         });
 
         ws.on("close", (e) => {
@@ -64,6 +63,7 @@ class GatewaySocket {
      * @param {Object} packet 
      */
     handlePacket(packet) {
+
         if (packet.op === Constants.GatewayOPCodes.HELLO) {
             this.heartbeatInterval = packet.d.heartbeat_interval;
             this.logger.log(`[GW/Hello] HB Timer: ${this.heartbeatInterval}ms`);
@@ -85,10 +85,10 @@ class GatewaySocket {
             this.sushi.SushiEvent.emit(packet.t, packet.d);
         }
     }
-    
+
     /**
      * Identify the client to discord server
-     */    
+     */
     identify() {
         const data = {
             token: this.token,
@@ -103,11 +103,11 @@ class GatewaySocket {
         this.send(Constants.GatewayOPCodes.IDENTIFY, data);
     }
 
-   /**
-    * Set the status info for Sushi client
-    * @param {*} status 
-    * @param {*} game 
-    */ 
+    /**
+     * Set the status info for Sushi client
+     * @param {*} status 
+     * @param {*} game 
+     */
     statusUpdate(status, game) {
 
         // {"op": 3, "d": {"status": "dnd", "since": 0, "game": null, "afk", false}}
@@ -124,7 +124,7 @@ class GatewaySocket {
 
     /**
      * Send a heartbeat to discord's servers
-     */    
+     */
     heartbeat() {
         this.send(Constants.GatewayOPCodes.HEARTBEAT, this.seq);
     }

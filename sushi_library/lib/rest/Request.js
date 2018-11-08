@@ -36,11 +36,11 @@ class RequestHandler {
                 method: method,
                 hostname: "discordapp.com",
                 path: this.baseURL + url,
-                data:body
+                data: body
             }
 
             var req = HTTPS.request(options, (res) => {
-                
+
                 if (res.statusCode < 200 || res.statusCode >= 300) {
                     return reject(new Error('statusCode=' + res.statusCode));
                 }
@@ -52,7 +52,7 @@ class RequestHandler {
                 });
 
                 // resolve on end
-                res.on('end',  () => {
+                res.on('end', () => {
                     try {
                         body = JSON.parse(Buffer.concat(body).toString());
                     } catch (e) {
@@ -65,7 +65,7 @@ class RequestHandler {
             req.on('error', function (err) {
                 reject(err);
             });
-            
+
             if (body) {
                 req.write(JSON.stringify(body));
             }

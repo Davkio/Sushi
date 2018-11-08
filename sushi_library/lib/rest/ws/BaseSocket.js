@@ -35,13 +35,13 @@ class BaseSocket extends WebSocket {
 
     /**
      * Unset WebSocket Heartbeat
-     */    
+     */
     unsetHeartbeat() {
         var handle = heartbeat.get(this);
         if (handle !== undefined) clearInterval(handle);
         heartbeat.delete(this);
-    }   
-    
+    }
+
     /**
      * 
      * @param {Function} callback heartbeat() function
@@ -50,7 +50,7 @@ class BaseSocket extends WebSocket {
     setHeartbeat(callback, msec) {
 
         this.unsetHeartbeat();
-        
+
         heartbeat.set(this, setInterval(() => {
             callback();
         }, msec));
@@ -58,7 +58,7 @@ class BaseSocket extends WebSocket {
 
     /**
      * Close the websocket
-     */    
+     */
     close() {
         super.close()
         clearTimeout(5);

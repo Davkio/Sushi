@@ -3,7 +3,7 @@
 module.exports.Sushi = {
     SHARD_ID: 0,
     SHARD_COUNT: 0,
-    ENCODING: "?v=5&encoding=JSON",
+    ENCODING: "?v=6&encoding=JSON",
     BROWSER: "sushi",
     VERSION: 1
 };
@@ -37,7 +37,7 @@ module.exports.WSEvents = {
 
     VOICE_STATE_UPDATE: 'VOICE_STATE_UPDATE',
     VOICE_SERVER_UPDATE: 'VOICE_SERVER_UPDATE',
-    
+
     USER_UPDATE: 'USER_UPDATE',
     PRESENCE_UPDATE: 'PRESENCE_UPDATE',
     GAME_OBJECT: 'GAME_OBJECT'

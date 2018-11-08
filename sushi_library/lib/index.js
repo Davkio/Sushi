@@ -23,11 +23,11 @@ class Sushi {
         this.options = options;
         this.token = options.token;
 
-        this.gatewayURL = null;        
+        this.gatewayURL = null;
         this.gatewaySocket = null;
 
         const gw = () => this.gatewaySocket;
-        
+
         this.requestHandler = new Request(this);
         this.logger = new SushiLogger(this);
         this.SushiEvent = new SushiEvents();
@@ -38,7 +38,7 @@ class Sushi {
     /**
      * Attempt to connect shards to the GatewaySocket
      * @returns {Promise} Resolves to a promise when successfully connected
-     */    
+     */
     connect() {
         return this.getGateway().then((data) => {
             this.options.shardCount = data.shards;
@@ -50,17 +50,17 @@ class Sushi {
 
     /**
      * Disconnects from the gateway socket
-     */    
+     */
     disconnect() {
         if (this.gatewaySocket) {
             this.gatewaySocket.disconnect();
             this.gatewaySocket = null;
         }
-    }    
+    }
     /**
      * Contact the gateway 
      * @returns {Promise<String>} Resolves with the Gateway URL
-     */    
+     */
     getGateway() {
         return this.requestHandler.request("GET", Endpoints.GATEWAY_BOT);
     }
@@ -68,7 +68,7 @@ class Sushi {
     /**
      * Creates the primary gateway connection
      * @returns {Promise} returns Gateway socket connection
-     */ 
+     */
     createPrimaryGateway() {
         if (!this.gatewaySocket) {
             const shardCount = this.options.shardCount

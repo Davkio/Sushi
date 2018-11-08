@@ -21,6 +21,11 @@ class SushiEvents extends events.EventEmitter {
         this.setMaxListeners(14);
     }
 
+    /**
+     * 
+     * @param {*} fn Function
+     * @param MESSAGE_CREATE 
+     */
     onAny(fn) {
         if (typeof fn !== "function")
             return this;

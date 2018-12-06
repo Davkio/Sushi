@@ -59,6 +59,12 @@ class IUser {
         let channel = e.channel_id;
         return this.sushi.requestHandler.request("POST", `/channels/${channel}/messages`, { content: message });
     }
+
+    sendEmbed(e, embedObject) {
+        let channel = e.channel_id;
+
+        return this.sushi.requestHandler.request("POST", `/channels/${channel}/messages`, { embed: embedObject });
+    }
     /**
      * Set the 'Now Playing' text for a Sushi Client
      * @param {String} game Game to set set as playing

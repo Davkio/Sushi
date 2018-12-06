@@ -2,6 +2,14 @@
 
 const Sushi = require("../../sushi_library/lib/index");
 const config = require('./config.json');
+const credentials = require('./credentials.json')
+const fs = require('fs');
+const readline = require('readline');
+const { google } = require('googleapis');
+
+const SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly'];
+const TOKEN_PATH = 'token.json';
+
 
 class SushiBot {
     constructor(options = {}) {
@@ -25,6 +33,25 @@ class SushiBot {
                     client.Bot.getRoles(e).then((data) => {
                         let role = data.find(data => data.name == 'Game night').id;
                     });
+                }
+
+                if (e.content.startsWith("sushi --schedule")) {
+
+                    fs.readFile('credentials.json', (err, content) => {
+                        if (err) return console.log('Error loading client secret file:', err);
+                        // Authorize a client with credentials, then call the Google Sheets API.
+                        authorize(JSON.parse(content), printSchedule).then((data) => {
+                            console.log(data);
+                            var availability = "";
+                            for (var i = 0; i < 9; i++) {
+                                availability = availability + data[i][0] + " " + data[i][1] + "\n"
+                            }
+                            //console.log(availability)
+                            client.Bot.sendMessage(e, availability);
+                        });
+
+                    });
+
                 }
                 if (e.content.startsWith("sushi --gameNight")) {
                     let role = null;
@@ -69,44 +96,55 @@ class SushiBot {
 }
 var client = new SushiBot(config);
 
-/*
-class SushiBot extends Sushi {
-    constructor(options = {}) {
-        super(options);
-        
-        this.options = options;
-        this.token = options.token;
-        
-        this.connect(this.options.token);
-    
-        this.SushiEvent.on("READY", (e) => {
-            console.log("CLIENT -- READY");
+
+
+/**
+ * Create an OAuth2 client with the given credentials, and then execute the
+ * given callback function.
+ * @param {Object} credentials The authorization client credentials.
+ * @param {function} callback The callback to call with the authorized client.
+ */
+function authorize(credentials, callback) {
+    return new Promise((resolve, reject) => {
+        const { client_secret, client_id, redirect_uris } = credentials.installed;
+        const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[0]);
+
+        // Check if we have previously stored a token.
+        fs.readFile(TOKEN_PATH, (err, token) => {
+            oAuth2Client.setCredentials(JSON.parse(token));
+            resolve(callback(oAuth2Client));
+
         });
+    })
 
-        this.SushiEvent.on("MESSAGE_CREATE", (e) => {
-            if (e.content.startsWith('sushi --debug ')) {
-
-                if (e.content.endsWith('message')) {
-                    return console.log(e)
-                }
-                if (e.content.endsWith('channel')) {
-                    let channel = e.channel_id;
-                    return this.requestHandler.request("GET", `/channels/${channel}`).then((data) => {
-                        console.log(data);
-                    })
-                }
-                if (e.content.endsWith('--send')) {
-                    let channel = e.channel_id;
-                    return this.requestHandler.request("POST", `/channels/${channel}/messages`, { content: JSON.stringify(e) });
-                }
-                if (e.content.endsWith("--status")) {
-                    return this.Bot.setStatus("dnd", "In development!");
-                }
-            }
-        })
-    }
 
 }
-*/
 
+
+/**
+ * Prints the schedules in the dim sim spread
+ * @param {google.auth.OAuth2} auth The authenticated Google OAuth client.
+ */
+function printSchedule(auth) {
+    return new Promise((resolve, reject) => {
+        const sheets = google.sheets({ version: 'v4', auth });
+        sheets.spreadsheets.values.get({
+            spreadsheetId: '1sVeoxJ8R1PYovddGN6D-qJxF8CVTzvue3SuwQ3_vrno',
+            range: 'Schedule!L10:M18',
+        }, (err, res) => {
+            if (err) reject(console.log('The API returned an error: ' + err));
+            const rows = res.data.values;
+            if (rows.length) {
+                // Prints the 2 columns
+                rows.map((row) => {
+                    console.log(`${row[0]}, ${row[1]}`);
+                });
+                resolve(rows);
+            } else {
+                console.log('No data found.');
+            }
+        });
+    })
+
+}
 module.exports = SushiBot;
